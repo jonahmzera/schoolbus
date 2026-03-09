@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Available Buses</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<header class="top-bar">
+<h2>Bus Booking System</h2>
+</header>
+
+<section class="bus-page">
+
+<h1 id="campusTitle">Available Buses</h1>
+
+<div class="filters">
+
+<label>Select Day</label>
+<select id="daySelect">
+<option value="">Choose Day</option>
+<option value="monday">Monday</option>
+<option value="tuesday">Tuesday</option>
+<option value="wednesday">Wednesday</option>
+<option value="thursday">Thursday</option>
+<option value="friday">Friday</option>
+<option value="saturday">Saturday</option>
+</select>
+
+<label>Select Time</label>
+<select id="timeSelect">
+<option value="">Choose Time</option>
+</select>
+
+</div>
+
+<div id="busContainer" class="bus-container">
+
+<!-- buses appear here -->
+
+</div>
+
+</section>
+
+<script src="booking.js"></script>
+
+</body>
+</html>
