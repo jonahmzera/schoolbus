@@ -1,51 +1,167 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Available Buses</title>
-<link rel="stylesheet" href="styles.css">
+
+<style>
+
+body{
+font-family:Arial;
+background:#0b1d35;
+color:white;
+margin:0;
+padding:40px;
+}
+
+h1{
+text-align:center;
+margin-bottom:10px;
+}
+
+.trip-info{
+text-align:center;
+margin-bottom:40px;
+color:#9ecbff;
+}
+
+.bus-container{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:25px;
+max-width:900px;
+margin:auto;
+}
+
+.bus-card{
+background:white;
+color:black;
+padding:20px;
+border-radius:10px;
+box-shadow:0 5px 15px rgba(0,0,0,0.3);
+}
+
+.bus-card h3{
+margin-top:0;
+}
+
+.seats{
+margin:8px 0;
+font-weight:bold;
+}
+
+button{
+margin-top:10px;
+padding:10px 18px;
+border:none;
+background:#2b8cff;
+color:white;
+border-radius:6px;
+cursor:pointer;
+}
+
+button:hover{
+background:#1c6ed5;
+}
+
+</style>
+
 </head>
 
 <body>
 
-<header class="top-bar">
-<h2>Bus Booking System</h2>
-</header>
+<h1>Available Buses</h1>
 
-<section class="bus-page">
+<div class="trip-info" id="tripInfo"></div>
 
-<h1 id="campusTitle">Available Buses</h1>
+<div class="bus-container" id="busContainer"></div>
 
-<div class="filters">
+<script>
 
-<label>Select Day</label>
-<select id="daySelect">
-<option value="">Choose Day</option>
-<option value="monday">Monday</option>
-<option value="tuesday">Tuesday</option>
-<option value="wednesday">Wednesday</option>
-<option value="thursday">Thursday</option>
-<option value="friday">Friday</option>
-<option value="saturday">Saturday</option>
-</select>
+/* -----------------------
+   BUS DATABASE
+----------------------- */
 
-<label>Select Time</label>
-<select id="timeSelect">
-<option value="">Choose Time</option>
-</select>
+const buses=[
 
-</div>
+{plate:"KDE304E",campus:"nairobi",seats:47,layout:"3-2"},
+{plate:"KDC405D",campus:"nairobi",seats:47,layout:"3-2"},
+{plate:"KCE496V",campus:"nairobi",seats:47,layout:"3-2"},
+{plate:"KDV450P",campus:"athi",seats:47,layout:"3-2"},
 
-<div id="busContainer" class="bus-container">
+{plate:"KBC405R",campus:"athi",seats:29,layout:"2-2"},
+{plate:"KDE690B",campus:"athi",seats:29,layout:"2-2"},
+{plate:"KBA906C",campus:"nairobi",seats:29,layout:"2-2"},
+{plate:"KCB297V",campus:"nairobi",seats:29,layout:"2-2"}
 
-<!-- buses appear here -->
+]
 
-</div>
+/* -----------------------
+   READ USER SELECTION
+----------------------- */
 
-</section>
+const campus=localStorage.getItem("selectedCampus")
+const day=localStorage.getItem("selectedDay")
+const time=localStorage.getItem("selectedTime")
 
-<script src="booking.js"></script>
+document.getElementById("tripInfo").innerText=
+campus+" campus | "+day+" | "+time
+
+/* -----------------------
+   FILTER BUSES
+----------------------- */
+
+const available=buses.filter(bus=>bus.campus===campus)
+
+const container=document.getElementById("busContainer")
+
+/* -----------------------
+   DISPLAY BUSES
+----------------------- */
+
+available.forEach(bus=>{
+
+const storageKey="bus_"+bus.plate
+const bookedSeats=JSON.parse(localStorage.getItem(storageKey))||[]
+
+const seatsLeft=bus.seats-bookedSeats.length
+
+const card=document.createElement("div")
+card.className="bus-card"
+
+card.innerHTML=`
+
+<h3>Bus ${bus.plate}</h3>
+
+<p>Departure: ${time}</p>
+
+<p class="seats">Seats left: ${seatsLeft}</p>
+
+<button onclick="selectBus('${bus.plate}')">
+Select Bus
+</button>
+
+`
+
+container.appendChild(card)
+
+})
+
+/* -----------------------
+   SELECT BUS
+----------------------- */
+
+function selectBus(plate){
+
+localStorage.setItem("selectedBus",plate)
+
+window.location.href="seat-selection.html"
+
+}
+
+</script>
 
 </body>
 </html>
