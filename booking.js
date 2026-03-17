@@ -1,114 +1,54 @@
-const campus = localStorage.getItem("selectedCampus");
+const express = require('express');
+const router = express.Router();
 
-document.getElementById("campusTitle").innerText =
-"Available Buses - " + campus;
-
-const daySelect = document.getElementById("daySelect");
-const timeSelect = document.getElementById("timeSelect");
-const busContainer = document.getElementById("busContainer");
-
-const buses = {
-athi: [
-{plate:"KDA 342A"},
-{plate:"KBN 213B"},
-{plate:"KDG 887C"}
-],
-
-nairobi: [
-{plate:"KBZ 901A"},
-{plate:"KCY 118B"},
-{plate:"KDD 762C"}
-]
-};
-
-daySelect.addEventListener("change", loadTimes);
-timeSelect.addEventListener("change", showBuses);
-
-function loadTimes(){
-
-const day = daySelect.value;
-
-timeSelect.innerHTML = '<option value="">Choose Time</option>';
-
-let times = [];
-
-if(day === "tuesday"){
-times = ["1:00 PM","4:00 PM","5:00 PM"];
-}
-else if(day === "saturday"){
-times = ["10:00 AM"];
-}
-else{
-times = ["8:00 AM","4:00 PM","5:00 PM"];
-}
-
-times.forEach(time=>{
-const option = document.createElement("option");
-option.value = time;
-option.textContent = time;
-timeSelect.appendChild(option);
+// Get all bookings
+router.get('/', (req, res) => {
+    try {
+        const bookings = [];
+        res.json(bookings);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
-}
+// Create new booking
+router.post('/', (req, res) => {
+    try {
+        const { busPlate, seats, destination, farePerSeat } = req.body;
+        
+        // Validation
+        if (!busPlate || !seats || !Array.isArray(seats) || seats.length === 0) {
+            return res.status(400).json({ error: 'Invalid booking data' });
+        }
 
-function showBuses(){
+        // Generate booking ID
+        const bookingId = 'BUS' + Math.floor(Math.random() * 100000);
+        const total = seats.length * farePerSeat;
 
-busContainer.innerHTML = "";
+        const booking = {
+            bookingId,
+            busPlate,
+            seats,
+            destination,
+            farePerSeat,
+            total,
+            timestamp: new Date().toISOString()
+        };
 
-const campusBuses = buses[campus.toLowerCase()];
-
-campusBuses.forEach(bus=>{
-
-const card = document.createElement("div");
-card.className = "bus-card";
-
-card.innerHTML = `
-<h3>${bus.plate}</h3>
-<button class="book-btn">Book Seat</button>
-`;
-
-busContainer.appendChild(card);
-
+        res.json({ success: true, booking });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
-}
-const seatContainer = document.getElementById("seatContainer");
-
-if(seatContainer){
-
-let selectedSeat = null;
-
-for(let i=1;i<=32;i++){
-
-const seat = document.createElement("div");
-seat.className = "seat";
-seat.innerText = i;
-
-seat.addEventListener("click",()=>{
-
-if(selectedSeat){
-selectedSeat.classList.remove("selected");
-}
-
-seat.classList.add("selected");
-selectedSeat = seat;
-
-document.getElementById("selectedSeat").innerText = i;
-
-document.getElementById("continueBtn").disabled = false;
-
+// Get booking by ID
+router.get('/:bookingId', (req, res) => {
+    try {
+        const booking = { bookingId: req.params.bookingId };
+        res.json(booking);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
-seatContainer.appendChild(seat);
-
-}
-
-document.getElementById("continueBtn").addEventListener("click",()=>{
-
-localStorage.setItem("seatNumber",selectedSeat.innerText);
-
-window.location.href = "payment.html";
-
-});
-
-}
+module.exports = router;
